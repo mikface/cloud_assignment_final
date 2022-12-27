@@ -36,7 +36,14 @@ sudo apt-get -y install mysql-client
 
 wget https://downloads.mysql.com/docs/sakila-db.tar.gz
 sudo tar -xvf sakila-db.tar.gz -C /home/ubuntu
-sudo mysql -h 127.0.0.1 -u root -ppassword < /home/ubuntu/sakila/sakila-schema.sql
-sudo mysql -h 127.0.0.1 -u root -ppassword < /home/ubuntu/sakila/sakila-data.sql
-#sysbench oltp_read_write --table-size=1000000 --mysql-host=127.0.0.1 --mysql-db=sysbench --mysql-user=root --mysql-password=password prepare
-#sysbench oltp_read_write --table-size=1000000 --mysql-host=127.0.0.1 --mysql-db=sysbench --mysql-user=root --mysql-password=password --max-time=60 run
+git clone https://github.com/mikface/cloud_assignment_final.git /home/ubuntu/cloud
+docker compose -f /home/ubuntu/cloud/standalone/docker-compose.yml up -d
+
+until sudo mysql -h 127.0.0.1 -u root -ppassword < /home/ubuntu/sakila-db/sakila-schema.sql
+do
+  echo 'retrying DB setup'
+done
+sudo mysql -h 127.0.0.1 -u root -ppassword < /home/ubuntu/sakila-db/sakila-data.sql
+touch allDone
+sysbench oltp_read_write --table-size=1000000 --mysql-host=127.0.0.1 --mysql-db=sakila --mysql-user=root --mysql-password=password prepare
+sysbench oltp_read_write --table-size=1000000 --mysql-host=127.0.0.1 --mysql-db=sakila --mysql-user=root --mysql-password=password --max-time=60 run

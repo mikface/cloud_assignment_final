@@ -1,0 +1,21 @@
+version: '3'
+services:
+  mysql-slave:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_MASTER_HOST: _MASTER_HOST_IP
+      MYSQL_MASTER_PORT: 3306
+      MYSQL_REPLICATION_USER: repl
+      MYSQL_REPLICATION_PASSWORD: replPassword
+    volumes:
+      - mysql-slave-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: always
+
+volumes:
+  mysql-slave-data:
